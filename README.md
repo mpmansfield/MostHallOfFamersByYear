@@ -8,5 +8,6 @@ are not eligible for election until this year. You can view the project at https
 
 ### Details
 Created with Ruby(w/ Middleman)/HTML/CSS/JavaScript/SQL 
-Core of project is /source/template.html.erb, which generates the html file for each year. Years are iterated in config.rb. 
-/source/yearindex.html.erb provides an index of years for browsing purposes and project explanation. 
+<br/>Core of project is /source/template.html.erb, which generates the html file for each year. 
+<br/>Years are iterated in config.rb. 
+<br/>/source/yearindex.html.erb provides an index of years for browsing purposes and project explanation. 
