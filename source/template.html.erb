@@ -1,0 +1,297 @@
+<% require 'sqlite3' %>
+
+<% db = SQLite3::Database.new ("database") %>
+
+<% batters = Array.new %>
+<% pitchers = Array.new %>
+<% bids = Array.new %>
+<% pids = Array.new %>
+<% teams = Array.new %>
+<% year = locals[:year] %>
+<% year = year.to_s %>
+<% yearplus = (year.to_i + 1).to_s %>
+<% yearminus = (year.to_i - 1).to_s %>
+
+<h2>Teams with most future Hall of Famers by year</h2>
+
+<p>
+<a href="yearindex.html#return">Return to Index</a>
+</p>
+
+<% if year != "1871" %>
+	<a class="btnleft" href=<%= yearminus + ".html" %>><%= "<< " + yearminus %></a>
+<% end %>
+
+<script>
+function process()
+{
+	if ((document.getElementById("url").value > 1870) && (document.getElementById("url").value < 2014)){
+		var url=document.getElementById("url").value + ".html";
+		location.href=url;
+		return false;
+	} else {
+		alert("Enter a year between 1871 and 2013.")
+		return false;
+	}
+}
+</script>
+
+<form style="text-align: center;" class="jump" onSubmit="return process();">
+<input style="text-align: center;" type="number" name="url" id="url"><br><input type="submit" value="Jump to Year">
+</form>
+
+<% if year != "2013" %>
+	<a class="btnright" href=<%= yearplus + ".html" %>><%= yearplus + " >>" %></a>
+<% end %>
+
+<br />
+<br />
+
+<% db.execute 'SELECT Batting.playerID, Batting.yearID, Batting.teamID, Batting.G, Batting.AB, Batting.R, Batting.H, Batting."2B", Batting."3B", Batting.HR, Batting.RBI, Batting.SB, Batting.CS, Batting.BB, Batting.SO, Batting.GIDP, Batting.HBP, Batting.SH, Batting.SF, Batting.IBB FROM Batting JOIN HallOfFame ON Batting.playerID = HallOfFame.playerID WHERE Batting.yearID = ? ORDER BY Batting.teamID, Batting.playerID Asc', year do |row| %>
+ 
+  	<% batters << row %>
+  	<% bids << row[0] %>
+
+<% end %>
+
+<% db.execute 'SELECT Pitching.playerID, Pitching.yearID, Pitching.teamID, Pitching.W, Pitching.L, Pitching.ERA, Pitching.G, Pitching.GS, Pitching.GF, Pitching.CG, Pitching.SHO, Pitching.SV, Pitching. IPOuts, Pitching.H, Pitching.R, Pitching.ER, Pitching.HR, Pitching.BB, Pitching.IBB, Pitching.SO, Pitching.HBP, Pitching.BK, Pitching.WP, Pitching.BFP FROM Pitching JOIN HallOfFame ON Pitching.playerID = HallOfFame.playerID WHERE Pitching.yearID = ? ORDER BY Pitching.teamID, Pitching.playerID Asc', year do |row| %>
+ 
+  	<% pitchers << row %>
+  	<% pids << row[0] %>
+
+<% end %>
+
+<% batters = batters.uniq %>
+<% pitchers = pitchers.uniq %>
+
+<% batters.each do |t| %>
+	<% unless pids.include? t[0] %>
+	<% teams << t[2] %>
+	<% end %>
+<% end %>
+<% pitchers.each do |t| %>
+	<% teams << t[2] %>
+<% end %>
+
+
+<% teamFreq = teams.inject(Hash.new(0)) { |h,v| h[v] += 1; h } %>
+<% teamMax = teamFreq.values.max %>
+<% maxTeams = teamFreq.select { |k,v| v == teamMax }.keys %>
+
+
+<% maxTeams.each do |x| %>
+	<% db.execute 'SELECT Teams.name, Franchises.franchName, Teams.teamIDBR, Teams.W, Teams.L, Teams.lgID, Teams.Rank, Teams.WSWin FROM Teams JOIN Franchises ON Teams.franchID = Franchises.franchID WHERE Teams.teamID = ? AND Teams.yearID = ?', x, year do |team| %>
+		<h3>
+			<a href=<%= "http://www.baseball-reference.com/teams/#{team[2]}/#{year}.shtml" %> target="_blank"><%= year %> <%= team[0] %></a>
+		</h3>
+		<p><%= team[3] %>-<%= team[4] %>,  
+			<% if team[6].to_i == 1 %>
+				<%= team[6].to_s %>st
+			<% elsif team[6].to_i == 2 %>
+				<%= team[6].to_s %>nd
+			<% elsif team[6].to_i == 3 %>
+				<%= team[6].to_s %>rd
+			<% else  %>
+				<%= team[6].to_s %>th
+			<% end %>
+			in <%= team[5].to_s%>
+			<% if team[7].to_s == "Y" %>
+				and Won World Series
+			<% end %>
+		</p>
+
+		<% if team[0].to_s != team[1].to_s %>
+			<p id=franchise>Franchise: <%= team[1] %></p>
+		<% end %>
+
+		<h4>Hitters</h4>
+		<table>
+		<tr><th>Name</th>
+			<th>G</th>
+			<th>PA</th>
+			<th>AB</th>
+			<th>R</th>
+			<th>H</th>
+			<th>2B</th>
+			<th>3B</th>
+			<th>HR</th>
+			<th>RBI</th>
+			<th>SB</th>
+			<th>CS</th>
+			<th>BB</th>
+			<th>SO</th>
+			<th>BA</th>
+			<th>OBP</th>
+			<th>SLG</th>
+			<th>OPS</th>
+			<th>TB</th>
+			<th>GDP</th>
+			<th>HBP</th>
+			<th>SH</th>
+			<th>SF</th>
+			<th>IBB</th></tr>
+		<% batters.each do |b| %>
+			<% db.execute 'SELECT nameFirst, nameLast, bbrefID FROM People WHERE playerID = ?', b[0] do |player| %>
+				<% if maxTeams.include? b[2] %>
+					<% if b[2] == x && (b[4].to_i + b[13].to_i + b[16].to_i + b[18].to_i + b[17].to_i) != 0%>
+					<tr>
+					<td><a href=<%= "http://www.baseball-reference.com/players/#{player[1][0].downcase}/#{player[2]}.shtml" %> target="_blank"><%= player[0] %> <%= player[1] %></a></td>
+					<td><%= b[3] %></td>
+					<td><%= b[4].to_i + b[13].to_i + b[16].to_i + b[18].to_i + b[17].to_i %></td>
+					<td><%= b[4] %></td>
+					<td><%= b[5] %></td>
+					<td><%= b[6] %></td>
+					<td><%= b[7] %></td>
+					<td><%= b[8] %></td>
+					<td><%= b[9] %></td>
+					<td><%= b[10] %></td>
+					<td><%= b[11] %></td>
+					<td><%= b[12] %></td>
+					<td><%= b[13] %></td>
+					<td><%= b[14] %></td>
+
+					<% if b[4].to_i != 0 %>
+						<td><%= ('%.3f' % (b[6].to_f/b[4].to_f).to_s).sub!(/^0/, "") %></td>
+					<% else %>
+						<td>.000</td>
+					<% end %>
+
+					<% if (b[4].to_i + b[13].to_i + b[16].to_i + b[18].to_i) != 0 %>
+						<% obp = ('%.3f' % ((b[6].to_f + b[13].to_f + b[16].to_f)/(b[4].to_f + b[13].to_f + b[16].to_f + b[18].to_f)).to_s).sub!(/^0/, "") %>
+						<td><%= obp %></td>
+					<% else %>
+						<td>.000</td>
+					<% end %>
+					
+					<% singles = b[6].to_i - b[7].to_i - b[8].to_i - b[9].to_i %>
+					<% if b[4].to_i != 0 %>
+						<% slg = ((singles + 2*b[7].to_f + 3*b[8].to_f + 4*b[9].to_f)/(b[4].to_f)) %>
+						<% if slg < 1 %>
+							<td><%= ('%.3f' % slg).to_s.sub!(/^0/, "") %></td>
+						<% else %>
+							<td><%= ('%.3f' % slg).to_s %></td>
+						<% end %>
+					<% else %>
+						<% slg = ".000".to_s %>
+						<td><%= slg %></td>
+					<% end %>
+					
+
+					<% if ((obp.to_f + slg.to_f < 1)) %>
+						<td><%= ('%.3f' % (obp.to_f + slg.to_f)).to_s.sub!(/^0/, "") %></td>
+					<% else %>
+						<td><%= ('%.3f' % (obp.to_f + slg.to_f)).to_s %></td>
+					<% end %>
+
+					<td><%= singles + 2*b[7].to_i + 3*b[8].to_i + 4*b[9].to_i %></td>
+					<td><%= b[15] %></td>
+					<td><%= b[16] %></td>
+					<td><%= b[17] %></td>
+					<td><%= b[18] %></td>
+					<td><%= b[19] %></td>
+					</tr>
+					<% end %>
+				<% end %>
+			<% end %>
+		<% end %>
+		</table>
+
+		<% teampitchers = Array.new %>
+		<% pitchers.each do |a| %>
+		<% if a[2] == x %>
+			<% teampitchers << x[0] %>
+		<% end %>
+		<% end %>
+		<% if teampitchers.any? %>
+			<h4>Pitchers</h4>
+			<table>
+			<tr><th>Name</th>
+				<th>W</th>
+				<th>L</th>
+				<th>W-L%</th>
+				<th>ERA</th>
+				<th>G</th>
+				<th>GS</th>
+				<th>GF</th>
+				<th>CG</th>
+				<th>SHO</th>
+				<th>SV</th>
+				<th>IP</th>
+				<th>H</th>
+				<th>R</th>
+				<th>ER</th>
+				<th>HR</th>
+				<th>BB</th>
+				<th>IBB</th>
+				<th>SO</th>
+				<th>HBP</th>
+				<th>BK</th>
+				<th>WP</th>
+				<th>BF</th>
+				<th>WHIP</th>
+				<th>H9</th>
+				<th>HR9</th>
+				<th>BB9</th>
+				<th>SO9</th>
+				<th>SOW</th>
+			</tr>
+		<% end %>
+		<% pitchers.each do |p| %>
+			<% db.execute 'SELECT nameFirst, nameLast, bbrefID FROM People WHERE playerID = ?', p[0] do |player| %>
+				<% if maxTeams.include? p[2] %>
+					<% if p[2] == x %>
+						<tr>
+						<td><a href=<%= "http://www.baseball-reference.com/players/#{player[1][0].downcase}/#{player[2]}.shtml" %> target="_blank"><%= player[0] %> <%= player[1] %></a></td>
+						<td><%= p[3] %></td>
+						<td><%= p[4] %></td>
+						<% if p[3].to_i > 0 && p[4].to_i == 0 %>
+							<td>1.000</td>
+						<% else %>
+						<td><%= ('%.3f' % (p[3].to_f / (p[3].to_f + p[4].to_f))).to_s.sub!(/^0/, "") %></td>
+						<% end %>
+						<td><%= '%.2f' % p[5] %></td>
+						<td><%= p[6] %></td>
+						<td><%= p[7] %></td>
+						<td><%= p[8] %></td>
+						<td><%= p[9] %></td>
+						<td><%= p[10] %></td>
+						<td><%= p[11] %></td>
+						<% rawip = p[12].to_f/3 %>
+						<% remainder = rawip - rawip.floor %>
+						<% if (remainder == 0) %>
+						<% fraction = ".0" %>
+						<% elsif (remainder > 0.5) %>
+						<% fraction = ".2" %>
+						<% else %>
+						<% fraction = ".1" %>
+						<% end %>
+						<td><%= rawip.floor.to_s + fraction %></td>
+						<td><%= p[13] %></td>
+						<td><%= p[14] %></td>
+						<td><%= p[15] %></td>
+						<td><%= p[16] %></td>
+						<td><%= p[17] %></td>
+						<td><%= p[18] %></td>
+						<td><%= p[19] %></td>
+						<td><%= p[20] %></td>
+						<td><%= p[21] %></td>
+						<td><%= p[22] %></td>
+						<td><%= p[23] %></td>
+						<td><%= '%.3f' % ((p[17].to_f + p[13].to_f) / rawip)  %></td>
+						<td><%= '%.1f' % ((p[13].to_f * 9) / rawip)  %></td>
+						<td><%= '%.1f' % ((p[16].to_f * 9) / rawip)  %></td>
+						<td><%= '%.1f' % ((p[17].to_f * 9) / rawip)  %></td>
+						<td><%= '%.1f' % ((p[19].to_f * 9) / rawip)  %></td>
+						<td><%= '%.2f' % (p[19].to_f / p[17].to_f) %></td>
+						</tr>
+					<% end %>
+				<% end %>
+			<% end %>
+		<% end %>
+		</table>
+	<% end %>
+<% end %>
+<br/>
+<br/>
+<br/>
+

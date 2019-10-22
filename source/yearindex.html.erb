@@ -1,0 +1,50 @@
+<div class="needsback">
+<h2>Teams with most future Hall of Famers by year: Index</h2>
+
+<p>
+<a href="https://www.matthewpmansfield.com/webdesign.html">Return to Matt Mansfield Web Design</a>
+</p>
+
+<h3>
+	About This Project
+</h3>
+
+<div class="spacing">
+<p>This project was created to answer one simple question: I wonder which team had to most hall of famers during each season in baseball's history? I'm a computer science student, application developer, and web designer, so I decided to use my skills and the tools I have learned about to answer that question. Below are links to each year in baseball history that a Hall of Famer was active. Each page specifies the team which had the most Hall of Famers on its roster that year. In the cases of the many ties, multiple teams are listed. The most recent year is 2013 as players active in 2014 are not eligible for election until this year. I hope you enjoy looking through these results as much as I did creating this project.</p></div>
+
+<h4>A Few Notes</h4>
+<div class="spacing">
+<ul>
+	<li>Special Thanks to <a href="http://www.seanlahman.com/baseball-archive/statistics/">Lahman's Baseball Database</a>, without which this project would not have been possible.</li>
+	<li>Shoutout to <a href="http://www.baseball-reference.com">Baseball Reference</a> for being one of the best websites ever and providing a point of reference to confirm my results.</li>
+<li>
+	OBP may be off by .001 until I make some corrections to the way it is calculated.
+</li>
+<li>
+	I hope to soon add information about players such as if they were rookies, all-stars, or won awards during certain years. 
+</li>
+</ul>
+</div>
+
+<h3 class="year" id="return"><u>Years: 1871-2013</u></h3>
+
+<div>
+<div class="row">
+  <div class="column">
+  	<% (1871..1918).each do |y| %>
+  	<div class="year"><a href=<%= "#{y}.html" %>><%= "#{y.to_s}\n" %></a></div>
+  	<% end %>
+  </div>
+  <div class="column">
+  	<% (1919..1966).each do |y| %>
+  	<div><a href=<%= "#{y}.html" %>><%= "#{y.to_s}\n" %></a></div>
+  	<% end %>
+  </div>
+  <div class="column">
+  	<% (1967..2013).each do |y| %>
+  	<div><a href=<%= "#{y}.html" %>><%= "#{y.to_s}\n" %></a></div>
+  	<% end %>
+  </div>
+</div>
+</div>
+</div>
