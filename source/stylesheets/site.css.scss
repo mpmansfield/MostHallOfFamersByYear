@@ -1,24 +1,146 @@
-body {
-  background-color: #fbc547;
-  color: #333;
-  font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", "Avenir",
-    "Segoe UI", "Lucida Grande", "Helvetica Neue", "Helvetica", "Fira Sans",
-    "Roboto", "Noto", "Droid Sans", "Cantarell", "Oxygen", "Ubuntu",
-    "Franklin Gothic Medium", "Century Gothic", "Liberation Sans", sans-serif;
-  padding: 18vh 1rem;
+.needsback {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+body,
+html {
+  height: 100%;
+}
+.bg {
+  min-height: 100%;
+  background-image: url('../images/baseballback.jpg');
+  background-repeat: repeat-x;
+  background-size: 100%;
+  background-attachment: fixed;
+}
+
+table {
+  border-collapse: collapse;
   text-align: center;
 }
 
-a {
-  color: rgba(#000, 0.7);
-
-  &:focus,
-  &:hover {
-    color: rgba(#000, 0.6);
-  }
+table,
+th,
+td {
+  border: 1px solid black;
 }
 
-.middleman-logo {
-  margin-bottom: 1rem;
-  width: 10rem;
+th,
+td {
+  padding: 2px;
+  font: sans-serif;
+}
+
+th {
+  background-color: #eeeeee;
+}
+
+h2 {
+  background-color: #97040b;
+  text-align: center;
+  color: white;
+  padding: 10px;
+}
+
+h3,
+h4 {
+  margin-bottom: -1px;
+  padding-bottom: 4px;
+  margin-left: 10px;
+  font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+}
+
+table {
+  width: 90%;
+  border-spacing: 0 50px;
+  margin-left: 10px;
+}
+
+#franchise {
+  margin-left: 10px;
+  margin-top: -1px;
+  margin-bottom: -10px;
+}
+
+th {
+  color: #97040b;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+th,
+td {
+  font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+  font-size: 13px;
+}
+
+td {
+  background-color: rgba(255, 255, 255, 0.75);
+}
+
+p {
+  margin-left: 10px;
+  font-size: 14px;
+  font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+}
+
+.btnleft,
+.btnright {
+  background-color: #97040b;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 17px;
+  border-radius: 8px;
+}
+
+.btnleft {
+  margin-left: 10px;
+  float: left;
+}
+
+.btnright {
+  float: right;
+  margin-right: 9%;
+}
+
+/* center all items within body, this property is inherited */
+body > * {
+  text-align: left;
+}
+/* left-align the CONTENTS all items within body, additionally
+        you can add this text-align: left property to all elements
+        manually */
+form {
+  display: inline-block;
+  margin-left: 30%;
+}
+/* reduces the width of the form to only what is necessary */
+input {
+  margin: 2px;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+  font-size: 30pt;
+  text-align: center;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+.spacing {
+  line-height: 1.5em;
+  margin-right: 35px;
+}
+
+.year {
+  text-align: center;
 }
