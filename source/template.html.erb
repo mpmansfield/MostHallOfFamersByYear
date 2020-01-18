@@ -47,6 +47,7 @@ function process()
 <br />
 <br />
 
+<%-# Select batter info for this year and populate batters array and batter ids array -%>
 <% db.execute 'SELECT Batting.playerID, Batting.yearID, Batting.teamID, Batting.G, Batting.AB, Batting.R, Batting.H, Batting."2B", Batting."3B", Batting.HR, Batting.RBI, Batting.SB, Batting.CS, Batting.BB, Batting.SO, Batting.GIDP, Batting.HBP, Batting.SH, Batting.SF, Batting.IBB FROM Batting JOIN HallOfFame ON Batting.playerID = HallOfFame.playerID WHERE Batting.yearID = ? ORDER BY Batting.teamID, Batting.playerID Asc', year do |row| %>
  
   	<% batters << row %>
@@ -54,6 +55,7 @@ function process()
 
 <% end %>
 
+<%-# Select pitcher info for this year and populate pitchers array and pither ids array -%>
 <% db.execute 'SELECT Pitching.playerID, Pitching.yearID, Pitching.teamID, Pitching.W, Pitching.L, Pitching.ERA, Pitching.G, Pitching.GS, Pitching.GF, Pitching.CG, Pitching.SHO, Pitching.SV, Pitching. IPOuts, Pitching.H, Pitching.R, Pitching.ER, Pitching.HR, Pitching.BB, Pitching.IBB, Pitching.SO, Pitching.HBP, Pitching.BK, Pitching.WP, Pitching.BFP FROM Pitching JOIN HallOfFame ON Pitching.playerID = HallOfFame.playerID WHERE Pitching.yearID = ? ORDER BY Pitching.teamID, Pitching.playerID Asc', year do |row| %>
  
   	<% pitchers << row %>
@@ -64,6 +66,7 @@ function process()
 <% batters = batters.uniq %>
 <% pitchers = pitchers.uniq %>
 
+<%-# Count player instances, don't count pitchers as hitters so they aren't counted twice -%>
 <% batters.each do |t| %>
 	<% unless pids.include? t[0] %>
 	<% teams << t[2] %>
@@ -73,12 +76,12 @@ function process()
 	<% teams << t[2] %>
 <% end %>
 
-
+<%-# Determine team(s) with most hofers -%>
 <% teamFreq = teams.inject(Hash.new(0)) { |h,v| h[v] += 1; h } %>
 <% teamMax = teamFreq.values.max %>
 <% maxTeams = teamFreq.select { |k,v| v == teamMax }.keys %>
 
-
+<%-# List teams and players/stats -%>
 <% maxTeams.each do |x| %>
 	<% db.execute 'SELECT Teams.name, Franchises.franchName, Teams.teamIDBR, Teams.W, Teams.L, Teams.lgID, Teams.Rank, Teams.WSWin FROM Teams JOIN Franchises ON Teams.franchID = Franchises.franchID WHERE Teams.teamID = ? AND Teams.yearID = ?', x, year do |team| %>
 		<h3>
